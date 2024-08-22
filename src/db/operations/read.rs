@@ -7,7 +7,6 @@ pub fn read_secret(store: &mut PrincipalStore, id: &str) -> Option<SecretData> {
             store.remove_secret(&id.to_string());
             None
         } else {
-            store.remove_secret(&id.to_string());
             Some(secret_data)
         }
     } else {
