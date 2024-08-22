@@ -1,6 +1,7 @@
 use crate::config::{HASH_SEED, ENCRYPTION_KEY, ENCRYPTION_IV};
 use crate::utils::time::current_timestamp;
 use crate::crypto::{encryption, hash};
+use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct SecretData {
@@ -28,5 +29,11 @@ impl SecretData{
 
     pub fn is_expired(&self) -> bool {
         self.expiration_date < current_timestamp()
+    }
+}
+
+impl fmt::Display for SecretData {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "SecretData {{ id: {}, expiration_date: {} }}", self.id, self.expiration_date)
     }
 }
