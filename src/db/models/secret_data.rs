@@ -1,7 +1,10 @@
-use crate::config::{HASH_SEED, ENCRYPTION_KEY, ENCRYPTION_IV};
-use crate::utils::time::current_timestamp;
+use crate::config::{HASH_SEED};
 use crate::crypto::{encryption, hash};
+
+use super::credential::{Credential};
+
 use std::fmt;
+use chrono::{Local};
 
 #[derive(Debug, Clone)]
 pub struct SecretData {
@@ -11,8 +14,11 @@ pub struct SecretData {
 }
 
 impl SecretData{
-    pub fn new(plaintext: &String, expiration_date: u64) -> Self {
-        let payload_encrypted = encryption::encrypt(&ENCRYPTION_KEY, &ENCRYPTION_IV, plaintext.as_bytes());
+    pub fn new(plaintext: &String, expiration_date: u64, credential: &Credential) -> Self {
+        let key: [u8; 16] = credential.encryption_key.clone().try_into().expect("Invalid key length");
+        let iv: [u8; 16] = credential.encryption_iv.clone().try_into().expect("Invalid IV length");
+        
+        let payload_encrypted = encryption::encrypt(&key, &iv, plaintext.as_bytes());
         
         let payload_encrypted_str = String::from_utf8_lossy(&payload_encrypted).to_string();
         let id = hash::generate_id(&payload_encrypted_str, HASH_SEED);
@@ -20,15 +26,19 @@ impl SecretData{
         SecretData { id, payload: payload_encrypted, expiration_date }
     }
 
-    pub fn decrypt(&self) -> String {
-        let decrypted_payload = encryption::decrypt(&ENCRYPTION_KEY, &ENCRYPTION_IV, self.payload.clone());
+    pub fn decrypt(&self, credential: &Credential) -> String {
+        let key: [u8; 16] = credential.encryption_key.clone().try_into().expect("Invalid key length");
+        let iv: [u8; 16] = credential.encryption_iv.clone().try_into().expect("Invalid IV length");
+
+        let decrypted_payload = encryption::decrypt(&key, &iv, self.payload.clone());
         let decrypted_payload_str = String::from_utf8_lossy(&decrypted_payload).to_string();
 
         decrypted_payload_str
     }
 
     pub fn is_expired(&self) -> bool {
-        self.expiration_date < current_timestamp()
+        let now = Local::now();
+        self.expiration_date < now.timestamp().try_into().unwrap()
     }
 }
 
