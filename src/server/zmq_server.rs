@@ -61,21 +61,18 @@ impl ZmqServer {
 }
 
 impl Server for ZmqServer {
-    fn start(&self) {
-        
+    fn start(&self, db_core: &DatabaseCore) {
         let context = zmq::Context::new();
         let responder = context.socket(zmq::REP).unwrap();
         assert!(responder.bind("tcp://*:5555").is_ok());
-        
-        let db_core = DatabaseCore::new();
-        
+
         log!("INFO", "ZMQ Server running on port 5555");
 
         loop {
             let request = responder.recv_string(0).unwrap().unwrap();
-            println!("Received request: {}", request);
+            log!("INFO", &format!("{}", request));
 
-            let response = ZmqServer::handle_request(&db_core, &request);
+            let response = ZmqServer::handle_request(db_core, &request);
 
             responder.send(&response, 0).unwrap();
         }
