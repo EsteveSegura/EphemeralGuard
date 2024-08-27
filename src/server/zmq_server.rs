@@ -4,6 +4,7 @@ use serde_json::{json, Value};
 use super::traits::Server;
 
 use crate::db::core::DatabaseCore;
+use crate::db::models::credential::Credential;
 
 use crate::log;
 
@@ -24,15 +25,24 @@ impl ZmqServer {
             Some("CREATE") => {
                 let payload = v["payload"].as_str().unwrap_or("");
                 let expiration = v["expiration"].as_u64().unwrap_or(3600); // Default 1 hour
-                match db_core.create_secret(payload, expiration) {
-                    Ok(secret) => json!({"status": "success", "id": secret.id}).to_string(),
+                
+                let credential = DatabaseCore::generate_random_credential();
+                let credential_string = Credential::get_credential_string(&credential.encryption_iv, &credential.encryption_key);
+                
+                println!("Credential string: {}", credential_string);
+                match db_core.create_secret(payload, expiration, &credential) {
+                    Ok(secret) => json!({"status": "success", "id": secret.id, "credential": credential_string}).to_string(),
                     Err(e) => json!({"status": "error", "message": e}).to_string(),
                 }
             }
             Some("READ") => {
                 let id = v["id"].as_str().unwrap_or("");
+                let credential = v["credential"].as_str().unwrap_or("");
+
+                let credential_from_string = Credential::new_from_string(&credential.to_string());
+
                 match db_core.read_secret(id) {
-                    Ok(Some(secret)) => json!({"status": "success", "payload": secret.decrypt()}).to_string(),
+                    Ok(Some(secret)) => json!({"status": "success", "payload": secret.decrypt(&credential_from_string)}).to_string(),
                     Ok(None) => json!({"status": "error", "message": "Secret not found or expired"}).to_string(),
                     Err(e) => json!({"status": "error", "message": e}).to_string(),
                 }
