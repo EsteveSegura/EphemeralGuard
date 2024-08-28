@@ -124,7 +124,6 @@ fn benchmark_mixed_operations(c: &mut Criterion) {
     });
 }
 
-// TODO: Make the benchmarks commented work (something wrong with deletes)
 criterion_group!(
     benches,
     benchmark_secret_creation,
