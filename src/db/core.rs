@@ -57,14 +57,15 @@ impl DatabaseCore {
             log!("ERR", &format!("READ on secret: {}, but not found", id));
             Ok(None)
         }
-    }    
+    }
 
     pub fn delete_secret(&self, id: &str) -> Result<bool, String> {
-        let store = self.store.read().map_err(|_| "Failed to acquire read lock")?;
-        if let Some(_secret) = store.get_secret(&id.to_string()) {
-            let mut store = self.store.write().map_err(|_| "Failed to acquire write lock")?;
+        let mut store = self.store.write().map_err(|_| "Failed to acquire write lock")?;
+        let id_string = id.to_string();
+        
+        if store.get_secret(&id_string).is_some() {
             log!("INFO", &format!("DELETE on secret: {}", id));
-            Ok(store.remove_secret(&id.to_string()))
+            Ok(store.remove_secret(&id_string))
         } else {
             log!("ERR", &format!("DELETE on secret: {}, but not found", id));
             Ok(false)
