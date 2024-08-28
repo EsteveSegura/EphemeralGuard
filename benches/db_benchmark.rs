@@ -129,7 +129,7 @@ criterion_group!(
     benches,
     benchmark_secret_creation,
     benchmark_secret_creation_and_reading,
-    // benchmark_secret_creation_and_deletion,
-    // benchmark_mixed_operations
+    benchmark_secret_creation_and_deletion,
+    benchmark_mixed_operations
 );
 criterion_main!(benches);
