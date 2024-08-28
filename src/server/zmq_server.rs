@@ -29,22 +29,31 @@ impl ZmqServer {
                 let credential = DatabaseCore::generate_random_credential();
                 let credential_string = Credential::get_credential_string(&credential.encryption_iv, &credential.encryption_key);
                 
-                println!("Credential string: {}", credential_string);
                 match db_core.create_secret(payload, expiration, &credential) {
                     Ok(secret) => json!({"status": "success", "id": secret.id, "credential": credential_string}).to_string(),
-                    Err(e) => json!({"status": "error", "message": e}).to_string(),
+                    Err(e) => {
+                        log!("ERR-ZMQSERVER", &format!("Failed to create secret: {}", e));
+                        json!({"status": "error", "message": e}).to_string()
+                    },
                 }
             }
             Some("READ") => {
                 let id = v["id"].as_str().unwrap_or("");
                 let credential = v["credential"].as_str().unwrap_or("");
-
-                let credential_from_string = Credential::new_from_string(&credential.to_string());
-
-                match db_core.read_secret(id) {
-                    Ok(Some(secret)) => json!({"status": "success", "payload": secret.decrypt(&credential_from_string)}).to_string(),
-                    Ok(None) => json!({"status": "error", "message": "Secret not found or expired"}).to_string(),
-                    Err(e) => json!({"status": "error", "message": e}).to_string(),
+            
+            
+                match Credential::new_from_string(&credential.to_string()) {
+                    Ok(credential_from_string) => {
+                        match db_core.read_secret(id) {
+                            Ok(Some(secret)) => json!({"status": "success", "payload": secret.decrypt(&credential_from_string)}).to_string(),
+                            Ok(None) => json!({"status": "error", "message": "Secret not found or expired"}).to_string(),
+                            Err(e) => json!({"status": "error", "message": e}).to_string(),
+                        }
+                    },
+                    Err(e) => {
+                        log!("ERR-ZMQSERVER", &format!("Failed to parse credential: {}", e));
+                        json!({"status": "error", "message": format!("Failed to parse credential: {}", e)}).to_string()
+                    }
                 }
             }
             Some("DELETE") => {
@@ -70,7 +79,7 @@ impl Server for ZmqServer {
 
         loop {
             let request = responder.recv_string(0).unwrap().unwrap();
-            log!("INFO", &format!("{}", request));
+            log!("INFO-ZMQSERVER", &format!("{}", request));
 
             let response = ZmqServer::handle_request(db_core, &request);
 
