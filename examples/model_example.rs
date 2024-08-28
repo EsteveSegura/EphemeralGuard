@@ -1,7 +1,7 @@
 
-use secret_db::db::models::secret_data::{SecretData};
-use secret_db::db::models::credential::{Credential};
-use chrono::{Local};
+use secret_db::db::models::secret_data::SecretData;
+use secret_db::db::models::credential::Credential;
+use chrono::Local;
 use rand::Rng;
 
 fn main() {
