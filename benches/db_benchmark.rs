@@ -26,7 +26,6 @@ fn benchmark_secret_creation(c: &mut Criterion) {
                 let credential = DatabaseCore::generate_random_credential();
                 let payload = generate_random_string(payload_size);
 
-                // CREATE operation
                 let _secret = db_core.create_secret(&payload, expiration, &credential).unwrap();
             }
         })
@@ -43,7 +42,6 @@ fn benchmark_secret_creation_and_reading(c: &mut Criterion) {
         b.iter(|| {
             let mut created_secrets = Vec::new();
 
-            // Crear secretos
             for _ in 0..num_operations {
                 let credential = DatabaseCore::generate_random_credential();
                 let payload = generate_random_string(payload_size);
@@ -52,7 +50,6 @@ fn benchmark_secret_creation_and_reading(c: &mut Criterion) {
                 created_secrets.push((secret, credential));
             }
 
-            // Leer secretos
             for (secret, credential) in created_secrets {
                 let _ = db_core.read_secret(&secret.id).unwrap().unwrap().decrypt(&credential);
             }
@@ -70,7 +67,6 @@ fn benchmark_secret_creation_and_deletion(c: &mut Criterion) {
         b.iter(|| {
             let mut created_secrets = Vec::new();
 
-            // Crear secretos
             for _ in 0..num_operations {
                 let credential = DatabaseCore::generate_random_credential();
                 let payload = generate_random_string(payload_size);
@@ -79,7 +75,6 @@ fn benchmark_secret_creation_and_deletion(c: &mut Criterion) {
                 created_secrets.push(secret);
             }
 
-            // Eliminar secretos
             for secret in created_secrets {
                 let _ = db_core.delete_secret(&secret.id);
             }
@@ -97,7 +92,6 @@ fn benchmark_mixed_operations(c: &mut Criterion) {
         b.iter(|| {
             let mut created_secrets = Vec::new();
 
-            // Crear secretos
             for _ in 0..num_operations {
                 let credential = DatabaseCore::generate_random_credential();
                 let payload = generate_random_string(payload_size);
@@ -106,16 +100,13 @@ fn benchmark_mixed_operations(c: &mut Criterion) {
                 created_secrets.push((secret, credential));
             }
 
-            // Operaciones mixtas: Leer la mitad y eliminar la mitad
             let midpoint = num_operations / 2;
 
-            // Leer la primera mitad
             for i in 0..midpoint {
                 let (secret, credential) = &created_secrets[i];
                 let _ = db_core.read_secret(&secret.id).unwrap().unwrap().decrypt(credential);
             }
 
-            // Eliminar la segunda mitad
             for i in midpoint..num_operations {
                 let (secret, _) = &created_secrets[i];
                 let _ = db_core.delete_secret(&secret.id);
