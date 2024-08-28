@@ -1,10 +1,10 @@
-use crate::config::{HASH_SEED};
+use crate::config::HASH_SEED;
 use crate::crypto::{encryption, hash};
 
-use super::credential::{Credential};
+use super::credential::Credential;
 
 use std::fmt;
-use chrono::{Local};
+use chrono::Local;
 
 #[derive(Debug, Clone)]
 pub struct SecretData {
