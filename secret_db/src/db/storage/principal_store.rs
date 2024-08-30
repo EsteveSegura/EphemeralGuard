@@ -3,6 +3,7 @@ use crate::db::models::secret_data::SecretData;
 use std::collections::{HashMap, VecDeque};
 use chrono::Local;
 
+#[derive(Debug)]
 pub struct PrincipalStore {
     store: HashMap<String, SecretData>,
     expirations: VecDeque<(String, u64)>,

@@ -1,46 +1,48 @@
 use secret_db::db::models::secret_data::SecretData;
 use secret_db::db::models::credential::Credential;
-use secret_db::db::storage::principal_store;
+use secret_db::db::storage::principal_store::PrincipalStore;
 use chrono::Local;
 use rand::Rng;
 
 fn main() {
-    // Create storage
-    let mut storage = principal_store::PrincipalStore::new();
-    println!("Empty storage: {:?}", storage);
+    // create storage
+    let mut storage = PrincipalStore::new();
+    println!("empty storage: {:?}", storage);
     
-    // Create secret
+    // create secret data
     let plaintext_payload = "password: 84717__$ss1Az_2024".to_string();
-    let current_time:u64 = Local::now().timestamp().try_into().unwrap();
+    let current_time: u64 = Local::now().timestamp().try_into().unwrap();
     let expiration_date = current_time + 1000;
     
     let iv = (0..16).map(|_| rand::thread_rng().gen_range(0..255)).collect::<Vec<u8>>();
     let key = (0..16).map(|_| rand::thread_rng().gen_range(0..255)).collect::<Vec<u8>>();
-    let credential = Credential::new(iv,key);
+    let credential = Credential::new(iv, key);
 
     let secret_data = SecretData::new(&plaintext_payload, expiration_date, &credential);
     let cloned_secret_data = secret_data.clone();
     
+    // add secret to storage
     storage.add_secret(secret_data);
-    println!("Storage: {:?}", storage);
+    println!("Almacenamiento: {:?}", storage);
     
+    // get secret by id
     let get_secret_by_id = storage.get_secret(&cloned_secret_data.id);
     let secret_data_real = match get_secret_by_id {
         Some(secret) => {
-            println!("Secret found: {:?}", secret);
+            println!("Secreto encontrado: {:?}", secret);
             secret
         }
         None => {
-            println!("Secret not found");
+            println!("Secreto no encontrado");
             return;
         }
     };
-    println!("Secret found: {:?}", secret_data_real);
     
+    // Read secret
     let secret_decrypted = secret_data_real.decrypt(&credential);
-    println!("Secret decrypted: {}", secret_decrypted);
-    
+    println!("Secreto desencriptado: {}", secret_decrypted);
+
+    // Remove secret
     storage.remove_secret(&cloned_secret_data.id);
-    println!("Storage: {:?}", storage);
-    
+    println!("Almacenamiento: {:?}", storage);
 }
