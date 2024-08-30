@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "secret_db",
+    "secret_db_client",
     "secret_db_debug_client",
 ]

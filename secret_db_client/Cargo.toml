@@ -1,0 +1,9 @@
+[package]
+name = "secret_db_client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.0", features = ["derive"] }
+zmq = "0.9"  # O la versión que estés usando
+serde_json = "1.0"
