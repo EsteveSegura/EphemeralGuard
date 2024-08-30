@@ -71,4 +71,22 @@ impl DatabaseCore {
             Ok(false)
         }
     }
+
+    pub fn get_total_expirations(&self) -> usize {
+        let store = self.store.read().unwrap();
+        store.get_total_expirations()
+    }
+
+    pub fn clean_expired_secrets(&self, batch_size: usize, current_batch: usize) {
+        let mut store = self.store.write().unwrap();
+        store.clean_expired_secrets(batch_size, current_batch);
+    }
+}
+
+impl Clone for DatabaseCore {
+    fn clone(&self) -> Self {
+        DatabaseCore {
+            store: Arc::clone(&self.store),
+        }
+    }
 }
