@@ -19,7 +19,7 @@ fn main() {
             "1" => create_secret(&requester),
             "2" => read_secret(&requester),
             "3" => delete_secret(&requester),
-            "4" => create_100k_secrets(&requester), // Nueva opción
+            "4" => create_n_secrets(&requester),
             "5" => break,
             _ => println!("Invalid choice, please try again."),
         }
@@ -33,7 +33,7 @@ fn print_menu() {
     println!("1. Create Secret");
     println!("2. Read Secret");
     println!("3. Delete Secret");
-    println!("4. Create 100,000 Secrets with 30 seconds expiration"); // Nueva opción
+    println!("4. Create n Secrets with x seconds expiration");
     println!("5. Exit");
 }
 
@@ -88,23 +88,27 @@ fn delete_secret(requester: &zmq::Socket) {
     print_response(response);
 }
 
-fn create_100k_secrets(requester: &zmq::Socket) {
-    for i in 0..10 {
+fn create_n_secrets(requester: &zmq::Socket) {
+    let number_secrets_to_create:i64 = get_user_input("How many secrets to create: ").parse().unwrap();
+    let expiration_secrets:i64 = get_user_input("Expiration in n seconds: ").parse().unwrap();
+    
+    for i in 0..number_secrets_to_create {
         let payload = format!("Secret number {}", i + 1);
         let request = json!({
             "action": "CREATE",
             "payload": payload,
-            "expiration": 5, // 30 segundos de expiración
+            "expiration": expiration_secrets,
         });
-
+        
         requester.send(&request.to_string(), 0).unwrap();
         let response = requester.recv_string(0).unwrap().unwrap();
-        // Puedes opcionalmente mostrar solo las respuestas de error o las primeras 10 respuestas por ejemplo
+        
         if i < 10 {
             print_response(response);
+            println!("Only showing 10 secrets, but {} were created.", number_secrets_to_create);
         }
     }
-    println!("Successfully created 20,000 secrets with 30 seconds expiration.");
+    println!("Successfully created {} secrets with {} seconds of expiration.", number_secrets_to_create, expiration_secrets);
 }
 
 fn print_response(response: String) {
