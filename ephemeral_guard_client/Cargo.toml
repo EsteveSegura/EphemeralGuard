@@ -1,5 +1,5 @@
 [package]
-name = "secret_db_client"
+name = "ephemeral_guard_client"
 version = "0.1.0"
 edition = "2021"
 

@@ -1,5 +1,5 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use secret_db::db::core::DatabaseCore;
+use ephemeral_guard::db::core::DatabaseCore;
 use rand::Rng;
 
 fn generate_random_string(len: usize) -> String {

@@ -1,5 +1,5 @@
 [package]
-name = "secret_db"
+name = "ephemeral_guard"
 version = "0.1.0"
 edition = "2021"
 

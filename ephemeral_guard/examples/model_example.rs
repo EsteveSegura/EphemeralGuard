@@ -1,6 +1,6 @@
 
-use secret_db::db::models::secret_data::SecretData;
-use secret_db::db::models::credential::Credential;
+use ephemeral_guard::db::models::secret_data::SecretData;
+use ephemeral_guard::db::models::credential::Credential;
 use chrono::Local;
 use rand::Rng;
 

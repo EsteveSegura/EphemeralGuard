@@ -1,5 +1,5 @@
-use secret_db::server::factory::{ServerFactory, ServerType};
-use secret_db::db::core::DatabaseCore;
+use ephemeral_guard::server::factory::{ServerFactory, ServerType};
+use ephemeral_guard::db::core::DatabaseCore;
 use std::thread;
 use std::time::{Duration, Instant};
 

@@ -1,5 +1,5 @@
-use secret_db::config::{ENCRYPTION_KEY, ENCRYPTION_IV};
-use secret_db::crypto::encryption;
+use ephemeral_guard::config::{ENCRYPTION_KEY, ENCRYPTION_IV};
+use ephemeral_guard::crypto::encryption;
 
 fn main() {
     let plaintext = "A plaintext".to_string();

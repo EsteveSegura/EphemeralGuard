@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "secret_db",
-    "secret_db_client",
-    "secret_db_debug_client",
+    "ephemeral_guard",
+    "ephemeral_guard_client",
+    "ephemeral_guard_debug_client",
 ]

@@ -1,5 +1,5 @@
-use secret_db::config::HASH_SEED;
-use secret_db::crypto::hash;
+use ephemeral_guard::config::HASH_SEED;
+use ephemeral_guard::crypto::hash;
 
 fn main() {
     // String to be hashed
