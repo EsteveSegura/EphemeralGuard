@@ -1,23 +1,5 @@
-[package]
-name = "secret_db"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-xxhash-rust = { version = "0.8.12", features = ["xxh32"] }
-libaes = "0.7.0"
-zmq = "0.9"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-chrono = "0.4"
-rand = "0.8.5"
-
-[dev-dependencies]
-criterion = { version = "0.3", features = ["html_reports"] }
-sysinfo = "0.23.0"
-
-[[bench]]
-name = "db_benchmark"
-harness = false
+[workspace]
+members = [
+    "secret_db",
+    "secret_db_debug_client",
+]
