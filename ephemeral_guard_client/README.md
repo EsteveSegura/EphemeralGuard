@@ -70,7 +70,7 @@ cargo run -- read_secret -i "SECRET_ID" -c "CREDENTIALS"
 **Example:**
 
 ```bash
-cargo run -- read_secret -i "12345" -c "my_credentials"
+cargo run -- read_secret -i "SECRET_ID" -c "my_credentials"
 ```
 
 #### 3. Delete a Secret
