@@ -14,7 +14,8 @@ impl ZmqServer {
     pub fn new() -> Self {
         ZmqServer
     }
-
+    
+    #[deprecated(note = "ZMQ server is deprecated")]
     fn handle_request(db_core: &DatabaseCore, request: &str) -> String {
         let v: Value = match serde_json::from_str(request) {
             Ok(v) => v,
@@ -74,8 +75,9 @@ impl Server for ZmqServer {
         let context = zmq::Context::new();
         let responder = context.socket(zmq::REP).unwrap();
         assert!(responder.bind("tcp://*:5555").is_ok());
-
+        
         log!("INFO", "ZMQ Server running on port 5555");
+        log!("DEPRECATED", "ZMQ server is deprecated, will be removed in future versions");
 
         loop {
             let request = responder.recv_string(0).unwrap().unwrap();
