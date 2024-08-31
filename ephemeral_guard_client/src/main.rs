@@ -1,6 +1,7 @@
 use clap::{Arg, Command};
 use serde_json::{json, Value};
-use zmq;
+use std::io::{Read, Write};
+use std::net::TcpStream;
 
 fn main() {
     let matches = Command::new("EphemeralGuard CLI")
@@ -61,64 +62,73 @@ fn main() {
         )
         .get_matches();
 
-    let context = zmq::Context::new();
-    let requester = context.socket(zmq::REQ).unwrap();
-    assert!(requester.connect("tcp://localhost:5555").is_ok());
-
-    match matches.subcommand() {
-        Some(("add_secret", sub_matches)) => {
-            let payload = sub_matches.get_one::<String>("payload").unwrap();
-            let expiration: u64 = sub_matches.get_one::<String>("time").unwrap().parse().unwrap();
-            add_secret(&requester, payload, expiration);
+    let server_address = "127.0.0.1:1337";
+    match TcpStream::connect(server_address) {
+        Ok(mut stream) => {
+            match matches.subcommand() {
+                Some(("add_secret", sub_matches)) => {
+                    let payload = sub_matches.get_one::<String>("payload").unwrap();
+                    let expiration: u64 = sub_matches.get_one::<String>("time").unwrap().parse().unwrap();
+                    add_secret(&mut stream, payload, expiration);
+                }
+                Some(("read_secret", sub_matches)) => {
+                    let id = sub_matches.get_one::<String>("id").unwrap();
+                    let credential = sub_matches.get_one::<String>("credentials").unwrap();
+                    read_secret(&mut stream, id, credential);
+                }
+                Some(("delete_secret", sub_matches)) => {
+                    let id = sub_matches.get_one::<String>("id").unwrap();
+                    delete_secret(&mut stream, id);
+                }
+                _ => {
+                    eprintln!("Unrecognized command.");
+                }
+            }
         }
-        Some(("read_secret", sub_matches)) => {
-            let id = sub_matches.get_one::<String>("id").unwrap();
-            let credential = sub_matches.get_one::<String>("credentials").unwrap();
-            read_secret(&requester, id, credential);
-        }
-        Some(("delete_secret", sub_matches)) => {
-            let id = sub_matches.get_one::<String>("id").unwrap();
-            delete_secret(&requester, id);
-        }
-        _ => {
-            eprintln!("Unrecognized command.");
+        Err(e) => {
+            eprintln!("Failed to connect to server: {}", e);
         }
     }
 }
 
-fn add_secret(requester: &zmq::Socket, payload: &str, expiration: u64) {
+fn add_secret(stream: &mut TcpStream, payload: &str, expiration: u64) {
     let request = json!({
         "action": "CREATE",
         "payload": payload,
         "expiration": expiration,
     });
 
-    requester.send(&request.to_string(), 0).unwrap();
-    let response = requester.recv_string(0).unwrap().unwrap();
-    print_response(response);
+    send_request(stream, &request.to_string());
 }
 
-fn read_secret(requester: &zmq::Socket, id: &str, credential: &str) {
+fn read_secret(stream: &mut TcpStream, id: &str, credential: &str) {
     let request = json!({
         "action": "READ",
         "id": id,
         "credential": credential
     });
 
-    requester.send(&request.to_string(), 0).unwrap();
-    let response = requester.recv_string(0).unwrap().unwrap();
-    print_response(response);
+    send_request(stream, &request.to_string());
 }
 
-fn delete_secret(requester: &zmq::Socket, id: &str) {
+fn delete_secret(stream: &mut TcpStream, id: &str) {
     let request = json!({
         "action": "DELETE",
         "id": id
     });
 
-    requester.send(&request.to_string(), 0).unwrap();
-    let response = requester.recv_string(0).unwrap().unwrap();
-    print_response(response);
+    send_request(stream, &request.to_string());
+}
+
+fn send_request(stream: &mut TcpStream, request: &str) {
+    stream.write_all(request.as_bytes()).unwrap();
+    stream.flush().unwrap();
+
+    let mut buffer = [0; 1024];
+    let size = stream.read(&mut buffer).unwrap();
+    let response = String::from_utf8_lossy(&buffer[..size]);
+
+    print_response(response.to_string());
 }
 
 fn print_response(response: String) {
