@@ -10,7 +10,7 @@ pub enum DefaultTypeServer {
     ZMQ,
     TCP
 }
-pub const DEFAULT_SERVER: DefaultTypeServer = DefaultTypeServer::ZMQ;
+pub const DEFAULT_SERVER: DefaultTypeServer = DefaultTypeServer::TCP;
 pub const TCP_SERVER_PORT: &str = "1337";
 
 // cleanup
