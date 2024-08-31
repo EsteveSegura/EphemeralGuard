@@ -1,5 +1,6 @@
 use ephemeral_guard::server::factory::{ServerFactory, ServerType};
 use ephemeral_guard::db::core::DatabaseCore;
+use ephemeral_guard::config;
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -16,7 +17,7 @@ fn main() {
    let mut current_batch = 1;
 
    thread::spawn(move || {
-      let cleanup_interval = Duration::from_secs(320);
+      let cleanup_interval = Duration::from_secs(config::CLEANUP_INTERVAL_SECONDS);
       let mut last_cleanup = Instant::now();
 
       loop {
@@ -39,6 +40,14 @@ fn main() {
       }
   });
 
-   let server = ServerFactory::create_server(ServerType::ZMQ);
-   server.start(&db_core);
+    match config::DEFAULT_SERVER {
+        config::DefaultTypeServer::ZMQ => {
+            let server_zmq = ServerFactory::create_server(ServerType::ZMQ);
+            server_zmq.start(&db_core);
+        }
+        config::DefaultTypeServer::TCP => {
+            let server_tcp = ServerFactory::create_server(ServerType::TCP);
+            server_tcp.start(&db_core);
+        }
+    }  
 }
