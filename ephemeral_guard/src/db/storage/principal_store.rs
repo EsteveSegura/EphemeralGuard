@@ -2,8 +2,9 @@ use crate::log;
 use crate::db::models::secret_data::SecretData;
 use std::collections::{HashMap, VecDeque};
 use chrono::Local;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PrincipalStore {
     store: HashMap<String, SecretData>,
     expirations: VecDeque<(String, u64)>,

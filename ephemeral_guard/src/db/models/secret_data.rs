@@ -5,8 +5,9 @@ use super::credential::Credential;
 
 use std::fmt;
 use chrono::Local;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SecretData {
     pub id: String,
     pub payload: Vec<u8>,

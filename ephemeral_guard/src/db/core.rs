@@ -1,6 +1,10 @@
 use std::sync::{Arc, RwLock};
+use std::fs::{File, OpenOptions};
+use std::io::{self, Write, Read};
 use chrono::Local;
 use rand::Rng;
+use serde::{Serialize, Deserialize};
+use bincode;
 
 use crate::db::storage::principal_store::PrincipalStore;
 use crate::db::models::secret_data::SecretData;
@@ -17,6 +21,33 @@ impl DatabaseCore {
         DatabaseCore {
             store: Arc::new(RwLock::new(PrincipalStore::new())),
         }
+    }
+
+    pub fn from_file(path: &str) -> io::Result<Self> {
+        if let Ok(mut file) = File::open(path) {
+            let mut buffer = Vec::new();
+            file.read_to_end(&mut buffer)?;
+            let store: PrincipalStore = bincode::deserialize(&buffer)
+                .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+
+            log!("INFO", "Database loaded successfully.");
+            Ok(DatabaseCore {
+                store: Arc::new(RwLock::new(store)),
+            })
+        } else {
+            Ok(Self::new())
+        }
+    }
+
+    pub fn save_to_file(&self, path: &str) -> io::Result<()> {
+        let store = self.store.read().unwrap();
+        let encoded: Vec<u8> = bincode::serialize(&*store)
+            .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+        let mut file = OpenOptions::new().write(true).create(true).truncate(true).open(path)?;
+        file.write_all(&encoded)?;
+        
+        log!("INFO", "Database saved successfully.");
+        Ok(())
     }
 
     pub fn generate_random_credential() -> Credential {
@@ -88,5 +119,27 @@ impl Clone for DatabaseCore {
         DatabaseCore {
             store: Arc::clone(&self.store),
         }
+    }
+}
+
+impl Serialize for DatabaseCore {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let store = self.store.read().unwrap();
+        store.serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for DatabaseCore {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let store = PrincipalStore::deserialize(deserializer)?;
+        Ok(DatabaseCore {
+            store: Arc::new(RwLock::new(store)),
+        })
     }
 }
