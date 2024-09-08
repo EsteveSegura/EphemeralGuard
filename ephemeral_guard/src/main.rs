@@ -41,10 +41,6 @@ fn main() {
   });
 
     match config::DEFAULT_SERVER {
-        config::DefaultTypeServer::ZMQ => {
-            let server_zmq = ServerFactory::create_server(ServerType::ZMQ);
-            server_zmq.start(&db_core);
-        }
         config::DefaultTypeServer::TCP => {
             let server_tcp = ServerFactory::create_server(ServerType::TCP);
             server_tcp.start(&db_core);

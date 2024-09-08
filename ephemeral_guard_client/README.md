@@ -11,7 +11,6 @@ EphemeralGuard CLI is a command-line interface tool for managing secrets securel
 ## Requirements
 
 - Rust (latest stable version)
-- ZeroMQ (`zmq` crate)
 - JSON processing (`serde_json` crate)
 
 ## Installation
