@@ -7,7 +7,6 @@ pub const ENCRYPTION_IV: &[u8; 16] = b"This is 16 bytes";
 
 // server
 pub enum DefaultTypeServer {
-    ZMQ,
     TCP
 }
 pub const DEFAULT_SERVER: DefaultTypeServer = DefaultTypeServer::TCP;
