@@ -9,8 +9,13 @@ mod utils;
 
 fn main() {
    log!("INFO", "EphemeralGuard running...");
+    // run in cargo as "cargo run -- file"
+    let mode = match std::env::args().nth(1).as_deref() {
+        Some("file") => config::PrincipalStoreMode::FileStorage("database.bin".to_string()),  // Guardar en "database.bin"
+        _ => config::PrincipalStoreMode::InMemory,
+    };
 
-   let db_core = DatabaseCore::new();
+   let db_core = DatabaseCore::new(mode);
    let db_core_for_cleanup = db_core.clone();
 
    let batch_size = 400;

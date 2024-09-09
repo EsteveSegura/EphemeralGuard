@@ -4,6 +4,7 @@ use rand::Rng;
 
 use crate::db::storage::principal_store::PrincipalStore;
 use crate::db::models::secret_data::SecretData;
+use crate::config::PrincipalStoreMode;
 use crate::log;
 
 use crate::db::models::credential::Credential;
@@ -13,9 +14,9 @@ pub struct DatabaseCore {
 }
 
 impl DatabaseCore {
-    pub fn new() -> Self {
+    pub fn new(mode: PrincipalStoreMode) -> Self {
         DatabaseCore {
-            store: Arc::new(RwLock::new(PrincipalStore::new())),
+            store: Arc::new(RwLock::new(PrincipalStore::new(mode))),
         }
     }
 

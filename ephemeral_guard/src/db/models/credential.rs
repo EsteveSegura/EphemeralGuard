@@ -1,4 +1,6 @@
-#[derive(Debug, Clone)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Credential {
     pub encryption_iv: Vec<u8>,
     pub encryption_key: Vec<u8>,

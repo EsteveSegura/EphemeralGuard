@@ -2,11 +2,12 @@ use crate::config::HASH_SEED;
 use crate::crypto::{encryption, hash};
 
 use super::credential::Credential;
+use serde::{Serialize, Deserialize};
 
 use std::fmt;
 use chrono::Local;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SecretData {
     pub id: String,
     pub payload: Vec<u8>,
