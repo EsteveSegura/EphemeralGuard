@@ -1,12 +1,15 @@
 use ephemeral_guard::db::models::secret_data::SecretData;
 use ephemeral_guard::db::models::credential::Credential;
 use ephemeral_guard::db::storage::principal_store::PrincipalStore;
+use ephemeral_guard::config::PrincipalStoreMode;
 use chrono::Local;
 use rand::Rng;
 
 fn main() {
     // create storage
-    let mut storage = PrincipalStore::new();
+    // let mut storage = PrincipalStore::new();
+    let mode = PrincipalStoreMode::InMemory;
+    let mut storage = PrincipalStore::new(mode);
     println!("empty storage: {:?}", storage);
     
     // create secret data
