@@ -33,6 +33,10 @@ impl PrincipalStore {
         store
     }
 
+    pub fn get_total_secrets(&self) -> usize {
+        self.store.len()
+    }
+
     pub fn add_secret(&mut self, secret: SecretData) -> Option<SecretData> {
         let result = self.store.insert(secret.id.clone(), secret.clone());
         self.expirations.push_back((secret.id.clone(), secret.expiration_date));
