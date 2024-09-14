@@ -3,7 +3,6 @@ use config::{Config, File, FileFormat};
 use once_cell::sync::Lazy;
 use std::path::Path;
 
-// Valores por defecto
 
 // hash
 const DEFAULT_HASH_SEED: u32 = 1337;
