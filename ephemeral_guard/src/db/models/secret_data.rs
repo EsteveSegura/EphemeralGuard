@@ -22,7 +22,7 @@ impl SecretData{
         let payload_encrypted = encryption::encrypt(&key, &iv, plaintext.as_bytes());
         
         let payload_encrypted_str = String::from_utf8_lossy(&payload_encrypted).to_string();
-        let id = hash::generate_id(&payload_encrypted_str, HASH_SEED);
+        let id = hash::generate_id(&payload_encrypted_str, *HASH_SEED);
 
         SecretData { id, payload: payload_encrypted, expiration_date }
     }
