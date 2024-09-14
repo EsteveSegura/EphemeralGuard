@@ -18,7 +18,7 @@ fn test_secret_data_creation() {
     let secret_data = SecretData::new(&plaintext, expiration_date, &credential);
 
     let encrypted_payload_str = String::from_utf8_lossy(&secret_data.payload).to_string();
-    let expected_id = hash::generate_id(&encrypted_payload_str, HASH_SEED);
+    let expected_id = hash::generate_id(&encrypted_payload_str, *HASH_SEED);
     assert_eq!(secret_data.id, expected_id);
 
     assert_ne!(secret_data.payload, plaintext.as_bytes().to_vec());

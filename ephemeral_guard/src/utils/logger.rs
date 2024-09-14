@@ -1,9 +1,13 @@
 use chrono::Local;
+use crate::config::LOG_ACTIVE;
 
 pub struct Logger;
 
 impl Logger {
     pub fn log(&self, log_type: &str, payload: &str) {
+        if !*LOG_ACTIVE {
+            return;
+        }
         let current_time = formatted_current_time();
         println!("[{}] {} -> {}", log_type, current_time, payload);
     }

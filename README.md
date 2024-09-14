@@ -36,3 +36,14 @@ docker run -p 1337:1337 --name EphemeralGuard EphemeralGuard
 - The `-p 1337:1337` option maps port `1337` on your local machine to port `1337` inside the container. Adjust the port numbers as needed.
 
 - The --name EphemeralGuard option gives your container a specific name, making it easier to manage.
+
+### Config file
+
+If you want to specify your own settings, you should created a config.toml (same folder as the binary) with all or some of the following options:
+
+```toml
+hash_seed = 2468
+tcp_server_port = "8080"
+cleanup_interval_seconds = 60
+log_active = true
+```

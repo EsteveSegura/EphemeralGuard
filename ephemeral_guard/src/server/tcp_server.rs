@@ -92,9 +92,9 @@ impl TcpServer {
 
 impl Server for TcpServer {
     fn start(&self, db_core: &DatabaseCore) {
-        let listener = TcpListener::bind(format!("0.0.0.0:{}", config::TCP_SERVER_PORT)).unwrap();
+        let listener = TcpListener::bind(format!("0.0.0.0:{}", *config::TCP_SERVER_PORT)).unwrap();
 
-        log!("INFO", format!("TCP Server running on port {}", config::TCP_SERVER_PORT).as_str());
+        log!("INFO", format!("TCP Server running on port {}", *config::TCP_SERVER_PORT).as_str());
 
         for stream in listener.incoming() {
             match stream {

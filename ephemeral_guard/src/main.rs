@@ -22,7 +22,7 @@ fn main() {
    let mut current_batch = 1;
 
    thread::spawn(move || {
-      let cleanup_interval = Duration::from_secs(config::CLEANUP_INTERVAL_SECONDS);
+      let cleanup_interval = Duration::from_secs(*config::CLEANUP_INTERVAL_SECONDS);
       let mut last_cleanup = Instant::now();
 
       loop {

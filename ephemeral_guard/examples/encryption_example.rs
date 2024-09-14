@@ -1,7 +1,9 @@
-use ephemeral_guard::config::{ENCRYPTION_KEY, ENCRYPTION_IV};
 use ephemeral_guard::crypto::encryption;
 
 fn main() {
+    pub const ENCRYPTION_KEY: &[u8; 16] = b"This is the key!";
+    pub const ENCRYPTION_IV: &[u8; 16] = b"This is 16 bytes";
+
     let plaintext = "A plaintext".to_string();
     println!("String to encrypt (String): {}", plaintext);
 
