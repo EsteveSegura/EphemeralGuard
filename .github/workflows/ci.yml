@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Build dependencies
+      run: |
+        cd ephemeral_guard
+        cargo build --verbose
+
+    - name: Run tests
+      run: |
+        cd ephemeral_guard
+        cargo test --verbose
+
+    - name: Run benchmarks
+      run: |
+        cd ephemeral_guard
+        cargo bench --verbose
