@@ -1,21 +1,22 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use ephemeral_guard::db::core::DatabaseCore;
+use ephemeral_guard::config::PrincipalStoreMode;
 use rand::Rng;
 
 fn generate_random_string(len: usize) -> String {
-    let charset = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let mut rng = rand::thread_rng();
 
     (0..len)
         .map(|_| {
             let idx = rng.gen_range(0..charset.len());
-            charset[idx] as char
+            charset.chars().nth(idx).unwrap()
         })
         .collect()
 }
 
 fn benchmark_secret_creation(c: &mut Criterion) {
-    let db_core = DatabaseCore::new();
+    let db_core = DatabaseCore::new(PrincipalStoreMode::InMemory);
     let num_operations = 500;
     let payload_size = 256;
     let expiration = 3600;
@@ -33,7 +34,7 @@ fn benchmark_secret_creation(c: &mut Criterion) {
 }
 
 fn benchmark_secret_creation_and_reading(c: &mut Criterion) {
-    let db_core = DatabaseCore::new();
+    let db_core = DatabaseCore::new(PrincipalStoreMode::InMemory);
     let num_operations = 500;
     let payload_size = 256;
     let expiration = 3600;
@@ -58,7 +59,7 @@ fn benchmark_secret_creation_and_reading(c: &mut Criterion) {
 }
 
 fn benchmark_secret_creation_and_deletion(c: &mut Criterion) {
-    let db_core = DatabaseCore::new();
+    let db_core = DatabaseCore::new(PrincipalStoreMode::InMemory);
     let num_operations = 1000;
     let payload_size = 256;
     let expiration = 3600;
@@ -83,7 +84,7 @@ fn benchmark_secret_creation_and_deletion(c: &mut Criterion) {
 }
 
 fn benchmark_mixed_operations(c: &mut Criterion) {
-    let db_core = DatabaseCore::new();
+    let db_core = DatabaseCore::new(PrincipalStoreMode::InMemory);
     let num_operations = 1000;
     let payload_size = 256;
     let expiration = 3600;
